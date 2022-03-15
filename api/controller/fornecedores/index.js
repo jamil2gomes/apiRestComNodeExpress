@@ -15,19 +15,31 @@ router.get('/:id', async (requisicao, resposta)=>{
     const fornecedor = new Fornecedor(fornecedorBuscado);
     resposta.send(JSON.stringify(fornecedor));
   } catch (error) {
-     resposta.send(JSON.stringify({mensagem:error.message}))
+    resposta
+    .status(404)
+    .send(JSON.stringify({mensagem:error.message}));
   }
 })
 
 router.post('/', async (requisicao, resposta)=>{
+ try {
   const dadosRecebidos = requisicao.body;
   const fornecedor = new Fornecedor(dadosRecebidos);
+
+  fornecedor.validar();
 
   const fornecedorSalvo = await fornecedorService.criar(fornecedor);
 
   resposta.send(
     JSON.stringify(fornecedorSalvo)
   );
+ } catch (error) {
+  resposta.status(400).send(
+    JSON.stringify({
+        mensagem: error.message
+    })
+)
+ }
 })
 
 router.put('/:id', async (requisicao, resposta) => {
@@ -41,13 +53,32 @@ router.put('/:id', async (requisicao, resposta) => {
       await fornecedorService.atualizar(fornecedor);
       resposta.end()
   } catch (erro) {
-      resposta.send(
+    resposta.status(400).send(
           JSON.stringify({
-              mensagem: erro.message
+              mensagem: erro.message,
+              "status":erro.status
           })
       )
   }
 })
+
+
+router.delete('/:id', async (requisicao, resposta) => {
+  try {
+      const id = requisicao.params.id;
+      await fornecedorService.listarPor(id);
+     
+      const fornecedor = await fornecedorService.remover(id);
+
+      resposta.send(JSON.stringify({ fornecedor }));
+    } catch (erro) {
+      resposta.status(400).send(
+            JSON.stringify({
+                mensagem: erro.message
+            })
+        )
+    }
+  })
 
 
 module.exports = router;

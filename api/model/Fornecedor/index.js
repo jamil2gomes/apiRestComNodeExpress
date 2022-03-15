@@ -10,6 +10,19 @@ class Fornecedor{
       this.atualizadoEm = atualizadoEm;
       this.versao = versao;
     }
+
+
+    validar(){
+      const campos = ['empresa', 'email', 'categoria'];
+
+      campos.forEach((campo) => {
+        const valor = this[campo]
+    
+        if (typeof valor !== 'string' || valor.length === 0) {
+          throw new Error(`Campo ${campo} é obrigatório.`)
+        }
+      })
+    }
 }
 
 module.exports = Fornecedor;

@@ -48,9 +48,14 @@ async function atualizar(fornecedor) {
   await repository.atualizar(fornecedor.id, dadosParaAtualizar);
 }
 
+async function remover(id) {
+  return await repository.remover(id);
+}
+
 module.exports = {
   criar,
   listarTodos,
   listarPor,
-  atualizar
+  atualizar,
+  remover
 }

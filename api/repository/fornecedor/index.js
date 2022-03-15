@@ -19,6 +19,12 @@ module.exports = {
     )
 },
 
+remover (id) {
+  return Modelo.destroy({
+        where: { id: id }
+      });
+},
+
   async listarPor(id){
     const encontrado =  await Modelo.findOne({
       where:{
