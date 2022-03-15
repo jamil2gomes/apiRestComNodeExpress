@@ -15,7 +15,7 @@ router.get('/:id', async (requisicao, resposta)=>{
     const fornecedor = new Fornecedor(fornecedorBuscado);
     resposta.send(JSON.stringify(fornecedor));
   } catch (error) {
-     resposta.send(JSON.stringify({mensagem:error.message}))
+     resposta.send(JSON.stringify({erro:error.message}))
   }
 })
 
@@ -28,6 +28,26 @@ router.post('/', async (requisicao, resposta)=>{
   resposta.send(
     JSON.stringify(fornecedorSalvo)
   );
+})
+
+router.put('/:id', async (requisicao, resposta)=>{
+  try {
+    const id = requisicao.params.id;
+    const dadosRecebidos = requisicao.body;
+    const dados = Object.assign({}, dadosRecebidos, {id:id});
+    const fornecedor = new Fornecedor(dados);
+
+    await fornecedorService.atualizar(fornecedor);
+
+    resposta.send(JSON.stringify({mensagem:"Fornecedor atualizado com sucesso"}));
+  } catch (error) {
+    resposta.send(JSON.stringify({erro:error.message}))
+  }
+
+  
+
+
+
 })
 
 

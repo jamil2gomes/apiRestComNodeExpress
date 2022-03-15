@@ -10,6 +10,15 @@ module.exports = {
     return Modelo.create(fornecedor);
   },
 
+  atualizar(id, dadosParaAtualizar){
+    return  Modelo.update(
+      dadosParaAtualizar,
+      {
+        where:{id}
+      }
+    );
+  },
+
   async listarPor(id){
     const encontrado =  await Modelo.findOne({
       where:{
