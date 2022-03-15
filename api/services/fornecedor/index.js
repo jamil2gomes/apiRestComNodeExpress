@@ -28,31 +28,8 @@ async function criar(fornecedor){
 
 }
 
-async function atualizar(fornecedor){
-  //verifico se existe o fornecedor pra ser atualizado
-  const existeFornecedor = await repository.listarPor(fornecedor.id);
-
-  const campos = ["empresa", "email", "categoria"];
-
-  const dadosParaAtualizar = {};
-
-  campos.forEach(campo => {
-    const valor = fornecedor[campo];
-
-    if(typeof valor === 'string' && valor.length > 0){
-      dadosParaAtualizar[campo] = valor;
-    }
-  })
-
-  if(Object.keys(dadosParaAtualizar).length === 0)
-    throw new Error("Não foram fornecidos dados para atualizar");
-
-  await repository.atualizar(fornecedor.id, dadosParaAtualizar);
-}
-
 module.exports = {
   criar,
   listarTodos,
-  listarPor,
-  atualizar
+  listarPor
 }
