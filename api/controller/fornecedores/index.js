@@ -30,5 +30,24 @@ router.post('/', async (requisicao, resposta)=>{
   );
 })
 
+router.put('/:id', async (requisicao, resposta) => {
+  try {
+      const id = requisicao.params.id;
+      const dadosRecebidos = requisicao.body;
+      
+      const dados = Object.assign({}, dadosRecebidos, { id: id });
+
+      const fornecedor = new Fornecedor(dados);
+      await fornecedorService.atualizar(fornecedor);
+      resposta.end()
+  } catch (erro) {
+      resposta.send(
+          JSON.stringify({
+              mensagem: erro.message
+          })
+      )
+  }
+})
+
 
 module.exports = router;
