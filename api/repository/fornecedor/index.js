@@ -1,9 +1,9 @@
 const Modelo = require("../../banco/Tabelas/TabelaFornecedor");
-
+const NaoEncontrado = require("../../erros/NaoEncontrado")
 module.exports = {
 
   listarTodos() {
-    return Modelo.findAll();
+    return Modelo.findAll({ raw: true });
   },
 
   inserir(fornecedor){
@@ -33,7 +33,7 @@ remover (id) {
     });
     
     if(!encontrado)
-      throw new Error("Não foi encontrado");
+      throw new NaoEncontrado();
 
       return encontrado;
   }

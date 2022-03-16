@@ -1,5 +1,6 @@
 const repository = require('../../repository/fornecedor')
-
+const CampoInvalido = require('../../erros/CampoInvalido')
+const DadosNaoFornecidos = require('../../erros/DadosNaoFornecidos')
 
 async function listarTodos() {
   const resposta = await repository.listarTodos();
@@ -12,6 +13,7 @@ async function listarPor(id) {
 }
 
 async function criar(fornecedor) {
+  validar(fornecedor);
   const resultado = await repository.inserir({
     empresa: fornecedor.empresa,
     email: fornecedor.email,
@@ -42,10 +44,22 @@ async function atualizar(fornecedor) {
   })
 
   if (Object.keys(dadosParaAtualizar).length === 0) {
-    throw new Error('Não foram fornecidos dados para atualizar!')
+    throw new DadosNaoFornecidos();
   }
 
   await repository.atualizar(fornecedor.id, dadosParaAtualizar);
+}
+
+function validar (fornecedor) {
+  const campos = ['empresa', 'email', 'categoria']
+
+  campos.forEach(campo => {
+      const valor = fornecedor[campo];
+
+      if (typeof valor !== 'string' || valor.length === 0) {
+          throw new CampoInvalido(campo);
+      }
+  })
 }
 
 async function remover(id) {
