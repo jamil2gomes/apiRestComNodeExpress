@@ -10,7 +10,11 @@ class Serializador{
     }
 
     xml (dados) {
-        return jsontoxml({[this.tag]:dados});
+        let tag = this.tagSimples;
+        if(Array.isArray(dados))
+            tag = this.tagList;
+
+        return jsontoxml({[tag]:dados});
     }
 
     serializar (dados) {
@@ -58,7 +62,8 @@ class SerializadorFornecedor extends Serializador {
       super();
       this.contentType = contentType;
       this.camposPublicos = ["id", "empresa"].concat(camposExtras || []);
-      this.tag="fornecedor";
+      this.tagSimples="fornecedor";
+      this.tagList="fornecedores";
     }
 }
 
