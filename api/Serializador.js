@@ -11,8 +11,15 @@ class Serializador{
 
     xml (dados) {
         let tag = this.tagSimples;
-        if(Array.isArray(dados))
+        if(Array.isArray(dados)){
             tag = this.tagList;
+
+            dados = dados.map(item => {
+                return {
+                    [this.tagSimples]:item   
+                }
+            });
+        }
 
         return jsontoxml({[tag]:dados});
     }
