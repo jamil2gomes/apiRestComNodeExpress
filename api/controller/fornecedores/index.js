@@ -83,5 +83,21 @@ router.delete('/:id', async (requisicao, resposta) => {
     }
   })
 
+  const roteadorProdutos = require('../produto');
+
+  //middleware de verificação de fornecedor
+  const verificarFornecedor = async(requisicao, resposta, proximo) => {
+
+    try {
+      const id = requisicao.params.id;
+      const fornecedor =  await fornecedorService.listarPor(id);
+      requisicao.fornecedor = fornecedor;
+      proximo();
+    } catch (error) {
+      proximo(error);
+    }
+  }
+
+  router.use('/:id/produtos/', verificarFornecedor, roteadorProdutos);
 
 module.exports = router;
