@@ -25,6 +25,9 @@ router.get('/:id', async (requisicao, resposta, proximo) => {
       resposta.getHeader('Content-Type'),
       ['email', 'criadoEm', 'atualizadoEm', 'versao']
     )
+    resposta.set('ETag', fornecedor.versao);
+    const timestamp = (new Date(fornecedor.atualizadoEm)).getTime();
+    resposta.set('Last-Modified',timestamp);
     resposta.send(
       serializador.serializar(fornecedor)
     )
@@ -40,11 +43,14 @@ router.post('/', async (requisicao, resposta, proximo) => {
 
     await fornecedorService.criar(fornecedor);
 
-    resposta.status(201);
     const serializador = new SerializadorFornecedor(
       resposta.getHeader('Content-Type')
     )
-    resposta.send(
+    resposta.set('ETag', fornecedor.versao);
+    const timestamp = (new Date(fornecedor.atualizadoEm)).getTime();
+    resposta.set('Last-Modified',timestamp);
+    resposta.set('Location',`/api/fornecedores/`);
+    resposta.status(201).send(
       serializador.serializar(fornecedor)
     )
   } catch (erro) {

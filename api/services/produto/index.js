@@ -62,7 +62,7 @@ async function atualizar(produto) {
 
 async function diminuirEstoque(produto) {
 
-  await repository.diminuirEstoque(produto);
+  return await repository.diminuirEstoque(produto);
 }
 
 

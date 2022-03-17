@@ -54,7 +54,16 @@ remover (idProduto, idFornecedor) {
 
   diminuirEstoque(produto){
     return instancia.transaction(async transaction => {
-      await produto.save();
+      const prod = await Modelo.findOne({
+        where:{
+          id:produto.id,
+          fornecedor: produto.fornecedor
+        }
+      });
+
+      prod.estoque = produto.estoque;
+
+      await prod.save();
 
       return produto;
     })
