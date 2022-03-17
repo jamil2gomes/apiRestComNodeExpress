@@ -3,6 +3,14 @@ const Fornecedor = require('../../model/Fornecedor');
 const fornecedorService = require('../../services/fornecedor');
 const SerializadorFornecedor = require('../../Serializador').SerializadorFornecedor
 
+
+router.options('/', (requisicao, resposta) => {
+  resposta.set('Access-Control-Allow-Methods', 'GET, POST');
+  resposta.set('Access-Control-Allow-Headers', 'Content-Type');
+  resposta.status(204).end();
+});
+
+
 router.get('/', async (requisicao, resposta) => {
   const resultados = await fornecedorService.listarTodos();
 
@@ -13,28 +21,8 @@ router.get('/', async (requisicao, resposta) => {
   resposta.send(
     serializador.serializar(resultados)
   )
-})
+});
 
-router.get('/:id', async (requisicao, resposta, proximo) => {
-  try {
-    const id = requisicao.params.id;
-    const fornecedorBuscado = await fornecedorService.listarPor(id);
-    const fornecedor = new Fornecedor(fornecedorBuscado);
-    resposta.status(200);
-    const serializador = new SerializadorFornecedor(
-      resposta.getHeader('Content-Type'),
-      ['email', 'criadoEm', 'atualizadoEm', 'versao']
-    )
-    resposta.set('ETag', fornecedor.versao);
-    const timestamp = (new Date(fornecedor.atualizadoEm)).getTime();
-    resposta.set('Last-Modified',timestamp);
-    resposta.send(
-      serializador.serializar(fornecedor)
-    )
-  } catch (erro) {
-    proximo(erro);
-  }
-})
 
 router.post('/', async (requisicao, resposta, proximo) => {
   try {
@@ -56,7 +44,56 @@ router.post('/', async (requisicao, resposta, proximo) => {
   } catch (erro) {
     proximo(erro);
   }
+});
+
+
+router.options('/:id', (requisicao, resposta) => {
+
+  resposta.set('Access-Control-Allow-Methods', 'GET, PUT, HEAD, DELETE');
+  resposta.set('Access-Control-Allow-Headers', 'Content-Type');
+  resposta.status(204).end();
 })
+
+
+router.get('/:id', async (requisicao, resposta, proximo) => {
+  try {
+    const id = requisicao.params.id;
+    const fornecedorBuscado = await fornecedorService.listarPor(id);
+    const fornecedor = new Fornecedor(fornecedorBuscado);
+    resposta.status(200);
+    const serializador = new SerializadorFornecedor(
+      resposta.getHeader('Content-Type'),
+      ['email', 'criadoEm', 'atualizadoEm', 'versao']
+    )
+    resposta.set('ETag', fornecedor.versao);
+    const timestamp = (new Date(fornecedor.atualizadoEm)).getTime();
+    resposta.set('Last-Modified',timestamp);
+    resposta.send(
+      serializador.serializar(fornecedor)
+    )
+  } catch (erro) {
+    proximo(erro);
+  }
+});
+
+
+router.head('/:id', async (requisicao, resposta, proximo) => {
+  try {
+    console.log("entreeeei aqui no head do fornecedor")
+    const id = requisicao.params.id;
+    const fornecedorBuscado = await fornecedorService.listarPor(id);
+    const fornecedor = new Fornecedor(fornecedorBuscado);
+   
+    resposta.set('ETag', fornecedor.versao);
+    const timestamp = (new Date(fornecedor.atualizadoEm)).getTime();
+    resposta.set('Last-Modified',timestamp);
+    resposta.status(200).end();
+    
+  } catch (erro) {
+    proximo(erro);
+  }
+});
+
 
 router.put('/:id', async (requisicao, resposta, proximo) => {
   try {
@@ -72,7 +109,7 @@ router.put('/:id', async (requisicao, resposta, proximo) => {
     } catch (erro) {
         proximo(erro);
     }
-})
+});
 
 
 router.delete('/:id', async (requisicao, resposta) => {
@@ -87,12 +124,13 @@ router.delete('/:id', async (requisicao, resposta) => {
     } catch (erro) {
         proximo(erro);
     }
-  })
+});
 
-  const roteadorProdutos = require('../produto');
+
+const roteadorProdutos = require('../produto');
 
   //middleware de verificação de fornecedor
-  const verificarFornecedor = async(requisicao, resposta, proximo) => {
+const verificarFornecedor = async(requisicao, resposta, proximo) => {
 
     try {
       const id = requisicao.params.id;
@@ -102,8 +140,8 @@ router.delete('/:id', async (requisicao, resposta) => {
     } catch (error) {
       proximo(error);
     }
-  }
+}
 
-  router.use('/:id/produtos/', verificarFornecedor, roteadorProdutos);
+router.use('/:id/produtos/', verificarFornecedor, roteadorProdutos);
 
 module.exports = router;

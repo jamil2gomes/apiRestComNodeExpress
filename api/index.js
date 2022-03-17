@@ -33,12 +33,15 @@ app.use((requisicao, resposta, proximo) => {
   proximo();
 });
 
-
+app.use((requisicao, resposta, proximo) => {
+    resposta.set('Access-Control-Allow-Origin', '*');
+    proximo();
+  });
 
 app.use("/api/fornecedores", router);
 
 
-//tratamento de erros personalizados
+//MIDDLEWARE tratamento de erros personalizados
 app.use((erro, requisicao, resposta, proximo) => {
   let status = 500
 
